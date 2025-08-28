@@ -1,1 +1,3 @@
 # ChessTrainer
+
+Uncle Sam style.
