@@ -15,7 +15,6 @@ python -m venv .venv # Only need to do this once per project
 source .venv/bin/activate
 ```
 
-
 Install dependencies:
 
 ```
