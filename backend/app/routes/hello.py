@@ -1,6 +1,5 @@
 from fastapi import APIRouter
 
-# Create a router (like a mini-app for related endpoints)
 router = APIRouter()
 
 @router.get("/hello")

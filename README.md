@@ -1,3 +1,3 @@
 # ChessTrainer
 
-Potentially Uncle Sam style.
+An AI trainer to help you level up your chess game!
