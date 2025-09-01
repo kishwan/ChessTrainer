@@ -1,40 +1,42 @@
-import { useState } from 'react'
-import { Chess, Move, type Piece } from 'chess.js'
-import { Chessboard, type ChessboardOptions } from 'react-chessboard'
-import './App.css'
+import { useRef, useState, useCallback } from "react";
+import { Chess } from "chess.js";
+import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
 
-function App() {
-  const [game, setGame] = useState(new Chess())
-  const chessboardOptions: ChessboardOptions = {
-      position: game.fen(),
-      onPieceDrop: onDrop,
-      boardWidth: 600
-  }
-  const makeMove = (move: { from: string; to: string; promotion?: string }): Move | null => {
-    const newGame = new Chess(game.fen())
-    const result = newGame.move(move);
+export default function Board() {
+  const gameRef = useRef(new Chess());
+  const [fen, setFen] = useState(gameRef.current.fen());
 
-    if (result) {
-      setGame(newGame)
-    }
-    return result
-  }
+  const onPieceDrop = useCallback(
+    ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs): boolean => {
+      const game = gameRef.current;
+  
+      const isWhitePawn = piece?.pieceType.toLowerCase() === "wp";
+      const isBlackPawn = piece?.pieceType.toLowerCase() === "bp";
+      const isPromotion =
+        (isWhitePawn && targetSquare!.endsWith("8")) ||
+        (isBlackPawn && targetSquare!.endsWith("1"));
 
-  const onDrop = (piece: Piece, sourceSquare: string, targetSquare: string): boolean => {
-    const move = {
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: 'q', // auto-promote for now
-    };
-    const result = makeMove(move);
-    return result != null;
-  }
+      const move = game.move({
+        from: sourceSquare,
+        to: targetSquare!,
+        promotion: isPromotion ? "q" : undefined,
+      });
+
+      if (!move) return false;
+      setFen(game.fen());
+      return true;
+    },
+    []
+  );
 
   return (
-    <Chessboard 
-      options={chessboardOptions}
-       />
-  )
+    <div>
+      <Chessboard
+        options={{
+          position: fen,
+          onPieceDrop,
+        }}
+      />
+    </div>
+  );
 }
-
-export default App
