@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from "react";
 import { Chess } from "chess.js";
 import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
+import "./App.css";
 
 export default function Board() {
   const gameRef = useRef(new Chess());
@@ -30,11 +31,15 @@ export default function Board() {
   );
 
   return (
-    <div>
+    <div className="board">
       <Chessboard
         options={{
           position: fen,
-          onPieceDrop,
+          onPieceDrop: onPieceDrop,
+          boardStyle: {
+            width: "50%",
+            height: "50%",
+          },
         }}
       />
     </div>
