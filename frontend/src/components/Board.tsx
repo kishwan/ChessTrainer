@@ -1,12 +1,8 @@
-import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
+import { Chessboard } from "react-chessboard";
 import { useChessGame } from "../hooks/useChessGame";
 import "./Board.css";
 export default function Board() {
-  const { fen, turn, makeMove } = useChessGame();
-
-  const onPieceDrop = ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs) => {
-    return makeMove(sourceSquare, targetSquare!, piece?.pieceType);
-  };
+  const { fen, turn, onPieceDrop } = useChessGame();
 
   return (
     <div className="board">
