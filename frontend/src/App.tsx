@@ -6,6 +6,7 @@ import "./App.css";
 export default function Board() {
   const gameRef = useRef(new Chess());
   const [fen, setFen] = useState(gameRef.current.fen());
+  const [turn, setTurn] = useState<"w" | "b">(gameRef.current.turn());
 
   const onPieceDrop = useCallback(
     ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs): boolean => {
@@ -25,6 +26,7 @@ export default function Board() {
 
       if (!move) return false;
       setFen(game.fen());
+      setTurn(game.turn());
       return true;
     },
     []
@@ -42,6 +44,9 @@ export default function Board() {
           },
         }}
       />
+      <div className="turnIndicator">
+        {turn === "w" ? "White to move" : "Black to move"}
+      </div>
     </div>
   );
 }
