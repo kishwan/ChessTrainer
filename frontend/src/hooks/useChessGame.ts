@@ -8,7 +8,7 @@ export function useChessGame() {
     const [turn, setTurn] = useState(gameRef.current.turn());
 
     const onPieceDrop = useCallback(
-    ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs): boolean => {
+      async ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs): Promise<boolean> => {
       const game = gameRef.current;
       if (!targetSquare) return false; // Invalid move or dropped outside of board
 
@@ -28,6 +28,16 @@ export function useChessGame() {
 
       setFen(game.fen());
       setTurn(game.turn());
+      
+      try {
+        const aiMove = await fetchNextMove(game.fen());
+        game.move({ from: aiMove.from, to: aiMove.to, promotion: aiMove.promotion });
+        setFen(game.fen());
+        setTurn(game.turn());
+      } catch (err) {
+        console.error("Failed to get next move " + err);
+      }
+      
       return true;
     },
     []
