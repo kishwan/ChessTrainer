@@ -39,3 +39,19 @@ export function useChessGame() {
         onPieceDrop,
     };
 }
+
+async function fetchNextMove(fen: string) {
+  const response = await fetch("http://localhost:5000/nextmove", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ fen })
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch next move");
+  }
+  
+  return response.json();
+}
