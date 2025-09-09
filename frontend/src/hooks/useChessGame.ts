@@ -2,6 +2,8 @@ import { useRef, useState, useCallback } from "react";
 import { Chess } from "chess.js";
 import { type PieceDropHandlerArgs } from "react-chessboard";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export function useChessGame() {
     const gameRef = useRef(new Chess());
     const [fen, setFen] = useState(gameRef.current.fen());
@@ -51,7 +53,7 @@ export function useChessGame() {
 }
 
 async function fetchNextMove(fen: string) {
-  const response = await fetch("http://localhost:5000/nextmove", {
+  const response = await fetch(`${API_URL}/nextmove`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
