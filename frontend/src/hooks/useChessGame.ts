@@ -2,13 +2,15 @@ import { useRef, useState, useCallback } from "react";
 import { Chess } from "chess.js";
 import { type PieceDropHandlerArgs } from "react-chessboard";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 export function useChessGame() {
     const gameRef = useRef(new Chess());
     const [fen, setFen] = useState(gameRef.current.fen());
     const [turn, setTurn] = useState(gameRef.current.turn());
 
     const onPieceDrop = useCallback(
-    ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs): boolean => {
+      async ({ sourceSquare, targetSquare, piece }: PieceDropHandlerArgs): Promise<boolean> => {
       const game = gameRef.current;
       if (!targetSquare) return false; // Invalid move or dropped outside of board
 
@@ -28,6 +30,16 @@ export function useChessGame() {
 
       setFen(game.fen());
       setTurn(game.turn());
+      
+      try {
+        const aiMove = await fetchNextMove(game.fen());
+        game.move({ from: aiMove.from, to: aiMove.to, promotion: aiMove.promotion });
+        setFen(game.fen());
+        setTurn(game.turn());
+      } catch (err) {
+        console.error("Failed to get next move " + err);
+      }
+      
       return true;
     },
     []
@@ -38,4 +50,20 @@ export function useChessGame() {
         turn,
         onPieceDrop,
     };
+}
+
+async function fetchNextMove(fen: string) {
+  const response = await fetch(`${API_URL}/nextmove`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ fen })
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch next move");
+  }
+  
+  return response.json();
 }
